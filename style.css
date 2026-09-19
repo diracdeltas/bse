@@ -1,0 +1,65 @@
+:root {
+  color-scheme: dark;
+  --bg: #0e0e10;
+  --fg: #e8e8ea;
+  --muted: #8b8b94;
+  --accent: #ff5500;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.5 system-ui, sans-serif;
+}
+
+main {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+h1 { margin: 0; font-size: 1.75rem; }
+h2 { margin: 2.5rem 0 0.5rem; font-size: 1.25rem; }
+.sub, #status { color: var(--muted); margin: 0.25rem 0; }
+#status { min-height: 1.5rem; }
+#status.error { color: #ff6b6b; }
+
+a { color: var(--accent); }
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.slot { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.frames { position: relative; min-height: 166px; background: #18181b; }
+.frames iframe { display: block; width: 100%; height: 166px; border: 0; }
+.frames iframe.probe { position: absolute; inset: 0; visibility: hidden; }
+
+button {
+  padding: 0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:disabled { background: #2a2a30; color: var(--muted); cursor: default; }
+
+#board { margin: 0; padding-left: 1.5rem; }
+#board li { padding: 0.25rem 0; }
+#board .record { color: var(--muted); font-size: 0.875rem; margin-left: 0.5rem; }
+
+.probes { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+@media (max-width: 42rem) {
+  .pair { grid-template-columns: 1fr; }
+}

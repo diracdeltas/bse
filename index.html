@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://w.soundcloud.com; style-src 'self'; frame-src https://w.soundcloud.com; connect-src https://greatest-track.jenuis.workers.dev; base-uri 'none'; form-action 'none'">
+<meta name="color-scheme" content="dark">
+<title>Best Song Ever</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>What is the best song ever uploaded to SoundCloud?</h1>
+  <p class="sub">Pick the better song.</p>
+  <p id="status" role="status">Loading…</p>
+  <div class="pair">
+    <section class="slot">
+      <div class="frames"></div>
+      <button type="button" disabled>This one</button>
+    </section>
+    <section class="slot">
+      <div class="frames"></div>
+      <button type="button" disabled>This one</button>
+    </section>
+  </div>
+  <h2>Leaderboard</h2>
+  <ol id="board"></ol>
+  <div id="probes" class="probes" aria-hidden="true"></div>
+</main>
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

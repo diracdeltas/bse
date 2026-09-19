@@ -1,0 +1,11 @@
+name = "greatest-track"
+main = "index.js"
+compatibility_date = "2025-09-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://diracdeltas.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "greatest-track"
+database_id = "ab23e192-524f-475b-86e0-2bbbf89c8e61"
