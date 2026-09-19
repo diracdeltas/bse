@@ -3,7 +3,7 @@ main = "index.js"
 compatibility_date = "2025-09-01"
 
 [vars]
-ALLOWED_ORIGIN = "https://diracdeltas.github.io"
+ALLOWED_ORIGIN = "https://azuki.vip"
 
 [[d1_databases]]
 binding = "DB"
