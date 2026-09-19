@@ -24,6 +24,10 @@ const say = (msg, isError = false) => {
 const setBusy = (busy) => slots.forEach((s) => { s.button.disabled = busy; });
 const randomId = () => 1 + Math.floor(Math.random() * MAX_ID);
 
+// DRM streams don't play without decryption support, and the widget picks them even when
+// plain streams exist, so tracks that list any encrypted stream get skipped.
+const isEncrypted = (sound) => sound.media?.transcodings?.some((t) => t.format?.protocol?.includes('encrypted'));
+
 // Loads a track into a hidden iframe under `host`. Dead tracks still fire READY but
 // come back with no title, so a missing title (or a timeout) means "skip it".
 const load = (id, host) => new Promise((resolve, reject) => {
@@ -40,7 +44,7 @@ const load = (id, host) => new Promise((resolve, reject) => {
   const timer = setTimeout(fail, TIMEOUT_MS);
   SC.Widget(frame).bind(SC.Widget.Events.READY, () => {
     SC.Widget(frame).getCurrentSound((sound) => {
-      if (!sound?.title) return fail();
+      if (!sound?.title || isEncrypted(sound)) return fail();
       clearTimeout(timer);
       sounds.set(id, { title: sound.title, url: sound.permalink_url });
       resolve({ id, frame });
