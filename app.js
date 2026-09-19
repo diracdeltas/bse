@@ -34,7 +34,8 @@ const load = (id, host) => new Promise((resolve, reject) => {
   const frame = document.createElement('iframe');
   frame.className = 'probe';
   frame.title = 'SoundCloud player';
-  frame.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(`https://api.soundcloud.com/tracks/${id}`)}`;
+  // show_teaser=false stops mobile browsers from showing a "Play on SoundCloud" app prompt over the player.
+  frame.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(`https://api.soundcloud.com/tracks/${id}`)}&show_teaser=false`;
   host.append(frame);
   const fail = () => {
     clearTimeout(timer);
