@@ -2,7 +2,6 @@ const API = 'https://greatest-track.jenuis.workers.dev';
 const MAX_ID = 2_400_000_000; // live track IDs top out around here (measured 2026-09)
 const PARALLEL = 4; // candidate widgets probed at once per slot (~20% of random IDs are live)
 const TIMEOUT_MS = 10_000;
-const BOARD_SIZE = 10;
 const CHAMPION_ODDS = 0.5; // chance one side is a leaderboard track instead of a random one
 
 const statusEl = document.getElementById('status');
@@ -78,21 +77,11 @@ const findChampion = async (host, id) => {
   }
 };
 
-const wilson = ({ wins, losses }) => {
-  const z = 1.96;
-  const n = wins + losses;
-  const p = wins / n;
-  return (p + (z * z) / (2 * n) - z * Math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n)) / (1 + (z * z) / n);
-};
-
 const refreshBoard = async () => {
   try {
     const res = await fetch(`${API}/board`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    board = (await res.json())
-      .filter((t) => t.wins > 0)
-      .sort((a, b) => wilson(b) - wilson(a))
-      .slice(0, BOARD_SIZE);
+    board = await res.json(); // the Worker returns the top tracks already ranked by Elo
   } catch (e) {
     board = [];
     say(`Couldn't load leaderboard: ${e.message}`, true);
@@ -103,7 +92,7 @@ const refreshBoard = async () => {
     const label = document.createElement('span');
     const record = document.createElement('span');
     record.className = 'record';
-    record.textContent = `${t.wins}W ${t.losses}L`;
+    record.textContent = `${Math.round(t.rating)} · ${t.wins}W ${t.losses}L`;
     li.append(label, record);
     const setLabel = ({ title, url }) => {
       const a = document.createElement('a');
