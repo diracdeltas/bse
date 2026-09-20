@@ -43,16 +43,17 @@ const vote = async (request, env, reply) => {
     const before = (id) => rated.find((r) => r.id === id)?.rating ?? null; // null: not rated yet
     const [rw, rl] = [before(winner), before(loser)];
     const delta = K * (1 - expected(rw ?? START_RATING, rl ?? START_RATING));
+    const votedAt = Date.now();
 
     // D1 runs a batch as one transaction. The vote rows are written only while this IP is within
     // its cap AND both tracks still have the ratings the delta was computed from. Otherwise
     // concurrent votes would all use the same stale ratings and their deltas would pile up.
     const rows = (id, other, mine, theirs, wins, losses, sign) => env.DB.prepare(
-      `INSERT INTO tracks (id, wins, losses, rating) SELECT ?1, ${wins}, ${losses}, ?5 ${sign} ?2
+      `INSERT INTO tracks (id, wins, losses, rating, last_vote) SELECT ?1, ${wins}, ${losses}, ?5 ${sign} ?2, ?9
         WHERE (SELECT count FROM limits WHERE ip = ?3) <= ?4
           AND (SELECT rating FROM tracks WHERE id = ?1) IS ?6 AND (SELECT rating FROM tracks WHERE id = ?7) IS ?8
-        ON CONFLICT (id) DO UPDATE SET wins = wins + ${wins}, losses = losses + ${losses}, rating = rating ${sign} ?2`,
-    ).bind(id, delta, ip, VOTES_PER_HOUR, START_RATING, mine, other, theirs);
+        ON CONFLICT (id) DO UPDATE SET wins = wins + ${wins}, losses = losses + ${losses}, rating = rating ${sign} ?2, last_vote = ?9`,
+    ).bind(id, delta, ip, VOTES_PER_HOUR, START_RATING, mine, other, theirs, wins ? votedAt : -votedAt);
     const results = await env.DB.batch([
       env.DB.prepare(`INSERT INTO limits (ip, hour, count) VALUES (?, ?, 1)
         ON CONFLICT (ip) DO UPDATE SET count = CASE WHEN hour = excluded.hour THEN count + 1 ELSE 1 END, hour = excluded.hour`)
@@ -73,7 +74,7 @@ const vote = async (request, env, reply) => {
 
 const board = async (env, reply) => {
   const { results } = await env.DB
-    .prepare('SELECT id, rating, wins, losses FROM tracks WHERE wins > 0 ORDER BY rating DESC LIMIT ?')
+    .prepare('SELECT id, rating, wins, losses FROM tracks WHERE wins > 0 ORDER BY rating DESC, last_vote DESC LIMIT ?')
     .bind(BOARD_ROWS)
     .all();
   return reply(results);
