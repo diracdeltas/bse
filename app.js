@@ -92,7 +92,7 @@ const refreshBoard = async () => {
     const label = document.createElement('span');
     const record = document.createElement('span');
     record.className = 'record';
-    record.textContent = `${Math.round(t.rating)} · ${t.wins}W ${t.losses}L`;
+    record.textContent = `${Math.round(t.rating)} ELO · ${t.wins}W ${t.losses}L`;
     li.append(label, record);
     const setLabel = ({ title, url }) => {
       const a = document.createElement('a');
